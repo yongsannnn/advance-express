@@ -27,7 +27,7 @@ var bootstrapField = function (name, object) {
 
 
 // categories should be an array of array. 
-const createProductForm = (categories) => {
+const createProductForm = (categories, tags) => {
     return forms.create({
         "name": fields.string({
             required: true,
@@ -58,6 +58,15 @@ const createProductForm = (categories) => {
             cssClass: ["form-label"],
             widget: widget.select(),
             choices:categories
+        }),
+        "tags": fields.string({
+            required: true,
+            errorAfterField: true,
+            cssClass: {
+                label: ["form-label"]
+            },
+            widget: widget.multipleSelect(),
+            choices: tags
         })
     })
 }
