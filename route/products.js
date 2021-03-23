@@ -4,7 +4,7 @@ const router = express.Router();
 
 // import in the Product model
 // STEP 1
-const {Product} = require("../models")
+const {Product, Category} = require("../models")
 
 // Alternate
 // const models = require("../models")
@@ -22,7 +22,9 @@ router.get("/", async (req,res)=>{
     // const [products] = connection.execute(query)
 
     // STEP 2 Call the model
-    let products = await Product.collection().fetch(); 
+    let products = await Product.collection().fetch({
+        withRelated:["category"]
+    }); 
 
     // STEP 3 Pass to the route, must make the variable into JSON file
     res.render("products/index", {
@@ -30,8 +32,11 @@ router.get("/", async (req,res)=>{
     })
 })
 
-router.get("/create", (req,res)=>{
-    const productForm = createProductForm();
+router.get("/create", async (req,res)=>{
+    const allCategories = await Category.fetchAll().map((category)=>{
+        return [category.get("id"), category.get("name")]
+    })
+    const productForm = createProductForm(allCategories);
     res.render("products/create", {
         "form": productForm.toHTML(bootstrapField)
     })
@@ -47,6 +52,7 @@ router.post("/create", (req,res)=>{
             newProduct.set("name",form.data.name);
             newProduct.set("cost",form.data.cost);
             newProduct.set("description",form.data.description);
+            newProduct.set("category_id",form.data.category_id);
             await newProduct.save();
             res.redirect("/products")
         },

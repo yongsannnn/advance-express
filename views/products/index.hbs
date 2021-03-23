@@ -12,6 +12,9 @@
                 Name
             </th>
             <th>
+                Category Name
+            </th>
+            <th>
                 Cost
             </th>
             <th>
@@ -26,6 +29,7 @@
         {{#each products}}
         <tr>
             <td>{{this.name}}</td>
+            <td>{{this.category.name}}</td>
             <td>{{this.cost}}</td>
             <td>{{this.description}}</td>
             <td>
