@@ -1,0 +1,17 @@
+{{#extends "base"}}
+{{#block "content"}}
+<form method ="POST">
+    <div class="alert alert-danger">
+        Are you sure you want to delete: {{product.name}}
+    </div>
+    <p>
+        <input type="submit" value="Delete" class="btn btn-danger">
+        <a href="/products" class="btn btn-success">Cancel</a> 
+    </p>
+
+
+
+
+</form>
+{{/block}}
+{{/extends}}
