@@ -26,13 +26,13 @@ app.use(
 // Import in the routes
 const landingRoutes = require("./route/landing")
 const corporateRoutes = require("./route/corporate")
-
+const productRoutes = require("./route/products")
 async function main() {
     // Prefix
     // If the url begins with the forward slash, use the landingRoutes
   app.use("/", landingRoutes)
   app.use("/corporate", corporateRoutes)
-
+    app.use("/products", productRoutes)
 }
 
 main();
