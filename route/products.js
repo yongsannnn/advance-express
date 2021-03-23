@@ -66,6 +66,9 @@ router.post("/create", (req,res)=>{
 
 
 router.get("/:product_id/update", async(req,res)=>{
+    const allCategories = await Category.fetchAll().map((category)=>{
+        return [category.get("id"), category.get("name")]
+    })
     // STEP 1 - Get the product that we want to update
     // This is the same as "SELEC * From Products WHERE id = ${product_id}"
     const productToEdit = await Product.where({
@@ -77,10 +80,11 @@ router.get("/:product_id/update", async(req,res)=>{
     
     // STEP 2 - send the product to the view
 
-    const form = createProductForm();
+    const form = createProductForm(allCategories);
     form.fields.name.value = productToEdit.get("name");
     form.fields.cost.value = productToEdit.get("cost");
     form.fields.description.value = productToEdit.get("description");
+    form.fields.category_id.value = productToEdit.get("category_id");
 
     res.render("products/update", {
         "form": form.toHTML(bootstrapField),
