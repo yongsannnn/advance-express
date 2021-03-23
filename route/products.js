@@ -11,6 +11,8 @@ const {Product} = require("../models")
 // to refer to the product model
 // we use "models.Product"
 
+//import in the forms
+const {createProductForm, bootstrapField}=require("../forms")
 
 router.get("/", async (req,res)=>{
     // If this is pure SQL
@@ -25,6 +27,13 @@ router.get("/", async (req,res)=>{
     // STEP 3 Pass to the route, must make the variable into JSON file
     res.render("products/index", {
         "products": products.toJSON()
+    })
+})
+
+router.get("/create", (req,res)=>{
+    const productForm = createProductForm();
+    res.render("products/create", {
+        "form": productForm.toHTML(bootstrapField)
     })
 })
 
