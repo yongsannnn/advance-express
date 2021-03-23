@@ -37,4 +37,26 @@ router.get("/create", (req,res)=>{
     })
 })
 
+router.post("/create", (req,res)=>{
+    const productForm = createProductForm();
+    productForm.handle(req,{
+        "success": async(form) => {
+            // use the Product model to save a new instance of Product
+            // Create a new row in the Products table
+            const newProduct = new Product();
+            newProduct.set("name",form.data.name);
+            newProduct.set("cost",form.data.cost);
+            newProduct.set("description",form.data.description);
+            await newProduct.save();
+            res.redirect("/products")
+        },
+        "error":(form)=> {
+            res.render("products/create", {
+                "form": form.toHTML(bootstrapField)
+            })
+        }
+    })
+})
+
+
 module.exports = router
