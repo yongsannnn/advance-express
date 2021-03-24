@@ -2,6 +2,9 @@ const express = require("express");
 const hbs = require("hbs");
 const wax = require("wax-on");
 require("dotenv").config();
+const session = require("express-session")
+const flash = require("connect-flash")
+
 
 // create an instance of express app
 let app = express();
@@ -22,6 +25,26 @@ app.use(
     extended: false
   })
 );
+
+//setup sessions
+app.use(session({
+    "secret": "whatever",
+    "resave": false, //if session never change, it will not resave
+    "saveUninitialized": true //if client connect without session, immediately create one
+
+}))
+
+// Setup flash
+app.use(flash())
+
+// a middleware
+// something that sit between the route and the user
+app.use(function(req,res,next){
+    // Inject into the hbs file the success and error message
+    res.locals.success_messages = req.flash("success_messages")
+    res.locals.error_messages = req.flash("error_messages")
+    next()
+})
 
 // Import in the routes
 const landingRoutes = require("./route/landing")
