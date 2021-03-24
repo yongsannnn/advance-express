@@ -50,12 +50,14 @@ app.use(function(req,res,next){
 const landingRoutes = require("./route/landing")
 const corporateRoutes = require("./route/corporate")
 const productRoutes = require("./route/products")
+const userRoutes = require("./route/users")
 async function main() {
     // Prefix
     // If the url begins with the forward slash, use the landingRoutes
   app.use("/", landingRoutes)
   app.use("/corporate", corporateRoutes)
     app.use("/products", productRoutes)
+    app.use("/users", userRoutes)
 }
 
 main();
