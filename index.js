@@ -4,7 +4,7 @@ const wax = require("wax-on");
 require("dotenv").config();
 const session = require("express-session")
 const flash = require("connect-flash")
-
+const csurf = require("csurf")
 
 // create an instance of express app
 let app = express();
@@ -34,9 +34,24 @@ app.use(session({
 
 }))
 
-// Setup flash
+// Setup flash (It require session, thus line must be below setup sessions)
 app.use(flash())
 
+// Setup CSURF (It require session, thus line must be below setup sessions)
+app.use(csurf())
+app.use(function(err,req,res,next){
+    console.log(err)
+    if (err && err.code == "EBADCSRFTOKEN"){
+        req.flash("error_messages", "Form has expired.")
+        res.redirect("back");
+    } else {
+        next()
+    }
+})
+
+
+
+// Global middleware -> affect all hbs files
 // a middleware
 // something that sit between the route and the user
 // Flash middleware
@@ -50,6 +65,11 @@ app.use(function(req,res,next){
 //Global middleware to inject the req.session.use object into the local variable, which are accessible by hbs_files
 app.use(function(req,res,next){
     res.locals.user = req.session.user;
+    next()
+})
+
+app.use(function(req,res,next){
+    res.locals.csrfToken = req.csrfToken();
     next()
 })
 
