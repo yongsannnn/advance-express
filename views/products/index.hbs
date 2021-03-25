@@ -24,6 +24,9 @@
                 Tags
             </th>
             <th>
+                Images
+            </th>
+            <th>
 
             </th>
         </tr>
@@ -40,6 +43,11 @@
                 <span class="badge badge-pill badge-primary">{{this.name}}</span>
                 {{/each}}
             </td>
+            <td>
+                {{#if this.image_url}}
+                    <img class="img-fliud" src="{{this.image_url}}"/>
+                {{/if}}
+            </td> 
             <td>
                 <a href="/products/{{this.id}}/update" class="btn-sm btn-primary">Update</a>
                 <a href="/products/{{this.id}}/delete" class="btn-sm btn-danger">Delete</a>
