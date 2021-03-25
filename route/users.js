@@ -93,5 +93,22 @@ router.post("/login", async (req,res)=>{
     })
 })
 
+router.get("/profile",(req,res)=>{
+    if(!req.session.user){
+        // User not logged in 
+        req.flash("error_messages", "Please login first.")
+        res.redirect("/users/login")
+    }else{
+        res.render("users/profile",{
+            "user": req.session.user
+        })
+    }
+})
+
+router.get("/logout",(req,res)=>{
+    req.session.user = null
+    req.flash("success_messages","Successfully logout")
+    res.redirect("/users/login")
+})
 
 module.exports = router

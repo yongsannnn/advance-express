@@ -10,6 +10,14 @@
 
     <title>{{#block "title"}}{{/block}}</title>
   </head>
+   <div>
+        {{#if user}}
+        Welcome, {{user.username}}
+
+        {{else}}
+        Welcome, stranger
+        {{/if}}
+    </div>
   <body>
       {{#if success_messages}}
         {{#each success_messages}}
