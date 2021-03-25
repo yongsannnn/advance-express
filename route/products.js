@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
 
     // STEP 2 Call the model
     let products = await Product.collection().fetch({
-        withRelated: ["category"]
+        withRelated: ["category","tags"]
     });
 
     // STEP 3 Pass to the route, must make the variable into JSON file
