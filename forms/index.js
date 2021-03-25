@@ -67,6 +67,12 @@ const createProductForm = (categories, tags) => {
             },
             widget: widget.multipleSelect(),
             choices: tags
+        }),
+        "image_url": fields.string({
+            required:true,
+            errorAfterField: true,
+            widget: widget.hidden(),
+
         })
     })
 }

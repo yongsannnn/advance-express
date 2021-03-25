@@ -4,9 +4,51 @@
 <h1>Create Product</h1>
 <form method="POST">
     {{{form}}}
+    <div>
+        <a href="#" class="btn btn-primary mb-3" id="upload_widget">Upload Image</a> 
+    </div>
+
     <input type="submit" class= "btn btn-primary" value="Create">
 
 
 </form>
+{{/block}}
+
+{{#block "js"}}
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous"></script>
+    <script>
+        const cloudName="{{cloudinaryName}}"
+        const apiKey = "{{cloudinaryApiKey}}"
+        const uploadPreset = "{{cloudinaryPreset}}"
+
+        // this will be called by cloudinary to get a signature
+        async function generateSignature(callback, params_to_sign){
+            let response = await axios.get("/cloudinary/sign",{
+                "params": {
+                    "params_to_sign": params_to_sign
+                }
+            })
+            // Inform cloudinary what the signature is
+            callback(response.data)
+        }
+        const config = {
+            "cloudName": cloudName,
+            "apiKey": apiKey,
+            "uploadPreset": uploadPreset,
+            "uploadSignature": generateSignature
+        }
+
+        const uploadWidget = cloudinary.createUploadWidget(config,(error,result)=>{
+            if (!error && result && result.event == "success"){
+                console.log("Upload is successful!")
+                console.log(result.info);
+            } 
+        })
+
+        document.querySelector("#upload_widget").addEventListener("click", ()=>{
+            uploadWidget.open();
+        })
+    </script>
 {{/block}}
 {{/extends}}

@@ -78,6 +78,8 @@ const landingRoutes = require("./route/landing")
 const corporateRoutes = require("./route/corporate")
 const productRoutes = require("./route/products")
 const userRoutes = require("./route/users")
+const cloudinaryRoute = require("./route/cloudinary")
+
 async function main() {
     // Prefix
     // If the url begins with the forward slash, use the landingRoutes
@@ -85,6 +87,7 @@ async function main() {
   app.use("/corporate", corporateRoutes)
     app.use("/products", productRoutes)
     app.use("/users", userRoutes)
+    app.use("/cloudinary", cloudinaryRoute)
 }
 
 main();

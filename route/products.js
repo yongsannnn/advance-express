@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
     })
 })
 
-router.get("/create",checkIfAuthenticated, async (req, res) => {
+router.get("/create", async (req, res) => {
     const allCategories = await Category.fetchAll().map((category) => {
         return [category.get("id"), category.get("name")]
     })
@@ -43,11 +43,14 @@ router.get("/create",checkIfAuthenticated, async (req, res) => {
     const allTags = await Tag.fetchAll().map(tag => [tag.get("id"), tag.get("name")])
     const productForm = createProductForm(allCategories, allTags);
     res.render("products/create", {
-        "form": productForm.toHTML(bootstrapField)
+        "form": productForm.toHTML(bootstrapField),
+        "cloudinaryName": process.env.CLOUDINARY_NAME,
+        "cloudinaryApiKey": process.env.CLOUDINARY_API_KEY,
+        "cloudinaryPreset": process.env.CLOUDINARY_UPLOAD_PRESET
     })
 })
 
-router.post("/create", checkIfAuthenticated, async (req, res) => {
+router.post("/create", async (req, res) => {
     const allCategories = await Category.fetchAll().map((category) => {
         return [category.get("id"), category.get("name")]
     })
@@ -109,7 +112,7 @@ router.get("/:product_id/update",checkIfAuthenticated,async (req, res) => {
     const productToEdit = await Product.where({
         "id": req.params.product_id
     }).fetch({
-        required: true,
+        require: true,
         withRelated: ["tags"]
     });
 
@@ -137,7 +140,7 @@ router.post("/:product_id/update", checkIfAuthenticated, async (req, res) => {
     const productToEdit = await Product.where({
         "id": req.params.product_id
     }).fetch({
-        required: true,
+        require: true,
         withRelated: ["tags"]
     });
     const productJSON = productToEdit.toJSON();
@@ -183,7 +186,7 @@ router.get('/:product_id/delete', async (req, res) => {
     const productToDelete = await Product.where({
         'id': req.params.product_id
     }).fetch({
-        required: true
+        require: true
     });
 
     res.render('products/delete', {
@@ -195,7 +198,7 @@ router.post('/:product_id/delete', async (req, res) => {
     const productToDelete = await Product.where({
         'id': req.params.product_id
     }).fetch({
-        required: true
+        require: true
     });
 
     // delete the product
