@@ -106,5 +106,24 @@ const createUserForm = () =>{
     })
 }
 
+const createLoginForm = () => {
+    return forms.create({
+        "email": fields.string({
+            required: true,
+            errorAfterField: true,
+            cssClass:{
+                label:["form-label"]
+            },
+            validators: [validators.email()]
+        }),
+        "password": fields.password({
+            required:true,
+            errorAfterField: true,
+            cssClass:{
+                label: ["form-label"]
+            }
+        })
+    })
+}
 
-module.exports={createProductForm,bootstrapField,createUserForm}
+module.exports={createProductForm,bootstrapField,createUserForm,createLoginForm}

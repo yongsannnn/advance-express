@@ -14,6 +14,9 @@ const { Product, Category, Tag } = require("../models")
 //import in the forms
 const { createProductForm, bootstrapField } = require("../forms")
 
+
+//import in checkIfAuthenticated middleware
+const {checkIfAuthenticated} = require("../middleware")
 router.get("/", async (req, res) => {
     // If this is pure SQL
     // SELECT * FROM Products
@@ -32,7 +35,7 @@ router.get("/", async (req, res) => {
     })
 })
 
-router.get("/create", async (req, res) => {
+router.get("/create",checkIfAuthenticated, async (req, res) => {
     const allCategories = await Category.fetchAll().map((category) => {
         return [category.get("id"), category.get("name")]
     })
@@ -44,7 +47,7 @@ router.get("/create", async (req, res) => {
     })
 })
 
-router.post("/create", async (req, res) => {
+router.post("/create", checkIfAuthenticated, async (req, res) => {
     const allCategories = await Category.fetchAll().map((category) => {
         return [category.get("id"), category.get("name")]
     })
@@ -95,7 +98,7 @@ router.post("/create", async (req, res) => {
 })
 
 
-router.get("/:product_id/update", async (req, res) => {
+router.get("/:product_id/update",checkIfAuthenticated,async (req, res) => {
     const allCategories = await Category.fetchAll().map((category) => {
         return [category.get("id"), category.get("name")]
     })
@@ -130,7 +133,7 @@ router.get("/:product_id/update", async (req, res) => {
 })
 
 
-router.post("/:product_id/update", async (req, res) => {
+router.post("/:product_id/update", checkIfAuthenticated, async (req, res) => {
     const productToEdit = await Product.where({
         "id": req.params.product_id
     }).fetch({

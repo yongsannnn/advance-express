@@ -39,10 +39,17 @@ app.use(flash())
 
 // a middleware
 // something that sit between the route and the user
+// Flash middleware
 app.use(function(req,res,next){
     // Inject into the hbs file the success and error message
     res.locals.success_messages = req.flash("success_messages")
     res.locals.error_messages = req.flash("error_messages")
+    next()
+})
+
+//Global middleware to inject the req.session.use object into the local variable, which are accessible by hbs_files
+app.use(function(req,res,next){
+    res.locals.user = req.session.user;
     next()
 })
 
