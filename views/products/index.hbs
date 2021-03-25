@@ -2,8 +2,16 @@
 
 {{#block "content"}}
 <h1>Product List</h1>
+
+<form method="GET">
+    {{{form}}}
+    <input type="submit" class="btn btn-primary" value="Search"/>
+</form>
+
+
+
 <div>
-    <a href="/products/create" class="btn btn-success mb-3">Create</a> 
+    <a href="/products/create" class="btn btn-success mt-3 mb-3">Create</a> 
 </div>
 <table class="table">
     <thead>

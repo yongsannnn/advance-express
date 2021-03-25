@@ -12,11 +12,11 @@ const { Product, Category, Tag } = require("../models")
 // we use "models.Product"
 
 //import in the forms
-const { createProductForm, bootstrapField } = require("../forms")
+const { createProductForm, bootstrapField, createProductSearchForm } = require("../forms")
 
 
 //import in checkIfAuthenticated middleware
-const {checkIfAuthenticated} = require("../middleware")
+const { checkIfAuthenticated } = require("../middleware")
 router.get("/", async (req, res) => {
     // If this is pure SQL
     // SELECT * FROM Products
@@ -24,15 +24,86 @@ router.get("/", async (req, res) => {
     // const query = "SELECT * From Products"
     // const [products] = connection.execute(query)
 
-    // STEP 2 Call the model
-    let products = await Product.collection().fetch({
-        withRelated: ["category","tags"]
-    });
-
-    // STEP 3 Pass to the route, must make the variable into JSON file
-    res.render("products/index", {
-        "products": products.toJSON()
+    const allCategories = await Category.fetchAll().map((category) => {
+        return [category.get("id"), category.get("name")]
     })
+    //manually make a index 0 and make it infront of the form
+    allCategories.unshift([0,"-------"])
+    const allTags = await Tag.fetchAll().map(tag => [tag.get("id"), tag.get("name")])
+    const searchForm = createProductSearchForm(allCategories, allTags);
+
+    // creating a base query (i.e SELECT * from products)
+    // a.k.a query builder 
+    let q = Product.collection();
+    let products = await q.fetch({
+                withRelated: ["category", "tags"]
+            });
+
+    //         res.render("products/index", {
+    //             "products": products.toJSON(),
+    //             "form": searchForm.toHTML(bootstrapField)
+    //         })
+    searchForm.handle(req, {
+        "empty": async (form) => {
+            //if the form is empty, display all 
+            // STEP 2 Call the model
+            let products = await q.fetch({
+                withRelated: ["category", "tags"]
+            });
+            
+            // STEP 3 Pass to the route, must make the variable into JSON file
+            res.render("products/index", {
+                "products": products.toJSON(),
+                "form": form.toHTML(bootstrapField)
+            })
+
+
+        },
+        "error": async(form) =>{
+            let products = await q.fetch({
+                withRelated: ["category", "tags"]
+            });
+
+            res.render("products/index", {
+                "products": products.toJSON(),
+                "form": form.toHTML(bootstrapField)
+            })
+        },
+        "success": async(form)=>{
+            
+            if (form.data.name){
+                // add a where name like "%name%"
+                q = q.where("name","like", "%"+ form.data.name+"%")
+            }
+
+            if (form.data.category_id !== "0"){
+                q = q.where("category_id", "=", form.data.category_id)
+            }
+             
+            if (form.data.min_cost) {
+                q = q.where("cost", ">=", form.data.min_cost)
+            }
+
+            if (form.data.max_cost) {
+                q = q.where("cost", "<=", form.data.max_cost)
+            }
+
+            if (form.data.tags){
+                q = q.query("join", " products_tags", "products.id", "product_id").where("tag_id","in", form.data.tags.split(","))
+            }
+
+            let products = await q.fetch({
+                withRelated: ["category", "tags"]
+            });
+            res.render("products/index", {
+                "products": products.toJSON(),
+                "form": form.toHTML(bootstrapField)
+            })
+        }
+        
+    })
+
+
 })
 
 router.get("/create", checkIfAuthenticated, async (req, res) => {
@@ -50,21 +121,18 @@ router.get("/create", checkIfAuthenticated, async (req, res) => {
     })
 })
 
-router.post("/create",checkIfAuthenticated, async (req, res) => {
+router.post("/create", checkIfAuthenticated, async (req, res) => {
     const allCategories = await Category.fetchAll().map((category) => {
         return [category.get("id"), category.get("name")]
     })
 
     const allTags = await Tag.fetchAll().map(tag => [tag.get("id"), tag.get("name")])
 
-    const productForm = createProductForm(allCategories,allTags);
+    const productForm = createProductForm(allCategories, allTags);
     productForm.handle(req, {
         "success": async (form) => {
-            // console.log(form.data)
             let { tags, ...productData } = form.data;
             // we need to seperate because the product table dont have the tags. 
-            // console.log("---")
-            // console.log(productData)
 
             // use the Product model to save a new instance of Product
             // Create a new row in the Products table
@@ -101,7 +169,7 @@ router.post("/create",checkIfAuthenticated, async (req, res) => {
 })
 
 
-router.get("/:product_id/update",checkIfAuthenticated,async (req, res) => {
+router.get("/:product_id/update", checkIfAuthenticated, async (req, res) => {
     const allCategories = await Category.fetchAll().map((category) => {
         return [category.get("id"), category.get("name")]
     })
@@ -183,7 +251,7 @@ router.post("/:product_id/update", checkIfAuthenticated, async (req, res) => {
     })
 })
 
-router.get('/:product_id/delete',checkIfAuthenticated, async (req, res) => {
+router.get('/:product_id/delete', checkIfAuthenticated, async (req, res) => {
     // 1. get the product that we want to delete
     // i.e, select * from products where id = ${product_id}
     const productToDelete = await Product.where({
@@ -197,7 +265,7 @@ router.get('/:product_id/delete',checkIfAuthenticated, async (req, res) => {
     })
 })
 
-router.post('/:product_id/delete',checkIfAuthenticated, async (req, res) => {
+router.post('/:product_id/delete', checkIfAuthenticated, async (req, res) => {
     const productToDelete = await Product.where({
         'id': req.params.product_id
     }).fetch({
