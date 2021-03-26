@@ -35,9 +35,9 @@ router.get("/", async (req, res) => {
     // creating a base query (i.e SELECT * from products)
     // a.k.a query builder 
     let q = Product.collection();
-    let products = await q.fetch({
-                withRelated: ["category", "tags"]
-            });
+    // let products = await q.fetch({
+    //             withRelated: ["category", "tags"]
+    //         });
 
     //         res.render("products/index", {
     //             "products": products.toJSON(),
