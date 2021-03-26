@@ -28,10 +28,9 @@ app.use(
 
 //setup sessions
 app.use(session({
-    "secret": "whatever",
+    "secret": process.env.SESSION_SECRET_KEY,
     "resave": false, //if session never change, it will not resave
     "saveUninitialized": true //if client connect without session, immediately create one
-
 }))
 
 // Setup flash (It require session, thus line must be below setup sessions)
