@@ -2,7 +2,7 @@
 const express = require("express")
 const router = express.Router();
 
-// import in the Product model
+// import in the Product, Categor and tag model
 // STEP 1
 const { Product, Category, Tag } = require("../models")
 
@@ -14,6 +14,8 @@ const { Product, Category, Tag } = require("../models")
 //import in the forms
 const { createProductForm, bootstrapField, createProductSearchForm } = require("../forms")
 
+//import DAL (Usually import everything because there are multiple functions inside we want to use)
+const productDataLayer = require("../dal/products")
 
 //import in checkIfAuthenticated middleware
 const { checkIfAuthenticated } = require("../middleware")
@@ -24,12 +26,11 @@ router.get("/", async (req, res) => {
     // const query = "SELECT * From Products"
     // const [products] = connection.execute(query)
 
-    const allCategories = await Category.fetchAll().map((category) => {
-        return [category.get("id"), category.get("name")]
-    })
+    const allCategories = await productDataLayer.getAllCategories()
+
     //manually make a index 0 and make it infront of the form
     allCategories.unshift([0,"-------"])
-    const allTags = await Tag.fetchAll().map(tag => [tag.get("id"), tag.get("name")])
+    const allTags = await productDataLayer.getAllTags()
     const searchForm = createProductSearchForm(allCategories, allTags);
 
     // creating a base query (i.e SELECT * from products)
@@ -170,25 +171,13 @@ router.post("/create", checkIfAuthenticated, async (req, res) => {
 
 
 router.get("/:product_id/update", checkIfAuthenticated, async (req, res) => {
-    const allCategories = await Category.fetchAll().map((category) => {
-        return [category.get("id"), category.get("name")]
-    })
-    const allTags = await Tag.fetchAll().map(tag => [tag.get("id"), tag.get("name")])
-
-    // STEP 1 - Get the product that we want to update
-    // This is the same as "SELECT * From Products WHERE id = ${product_id}"
-    const productToEdit = await Product.where({
-        "id": req.params.product_id
-    }).fetch({
-        require: true,
-        withRelated: ["tags"]
-    });
+    const allCategories = await productDataLayer.getAllCategories()
+    const allTags = await productDataLayer.getAllTags()
+    const productToEdit = await productDataLayer.getProductById(req.params.product_id)
 
     const productJSON = productToEdit.toJSON();
     const selectedTagIds = productJSON.tags.map(t => t.id)
-    // res.send(productToEdit)
 
-    // STEP 2 - send the product to the view
 
     const form = createProductForm(allCategories, allTags);
     form.fields.name.value = productToEdit.get("name");
