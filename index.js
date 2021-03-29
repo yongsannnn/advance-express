@@ -81,6 +81,7 @@ const productRoutes = require("./route/products")
 const userRoutes = require("./route/users")
 const cloudinaryRoute = require("./route/cloudinary")
 const shoppingCartRoute = require("./route/shoppingCart")
+const checkoutRoute = require("./route/checkout")
 
 async function main() {
     // Prefix
@@ -91,6 +92,7 @@ async function main() {
     app.use("/users", userRoutes)
     app.use("/cloudinary", cloudinaryRoute)
     app.use("/shoppingCart", shoppingCartRoute)
+    app.use("/checkout", checkoutRoute)
 }
 
 main();
