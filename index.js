@@ -3,6 +3,7 @@ const hbs = require("hbs");
 const wax = require("wax-on");
 require("dotenv").config();
 const session = require("express-session")
+const FileStore = require('session-file-store')(session);
 const flash = require("connect-flash")
 const csurf = require("csurf")
 
@@ -28,6 +29,7 @@ app.use(
 
 //setup sessions
 app.use(session({
+    "store": new FileStore(),
     "secret": process.env.SESSION_SECRET_KEY,
     "resave": false, //if session never change, it will not resave
     "saveUninitialized": true //if client connect without session, immediately create one
@@ -78,6 +80,7 @@ const corporateRoutes = require("./route/corporate")
 const productRoutes = require("./route/products")
 const userRoutes = require("./route/users")
 const cloudinaryRoute = require("./route/cloudinary")
+const shoppingCartRoute = require("./route/shoppingCart")
 
 async function main() {
     // Prefix
@@ -87,6 +90,7 @@ async function main() {
     app.use("/products", productRoutes)
     app.use("/users", userRoutes)
     app.use("/cloudinary", cloudinaryRoute)
+    app.use("/shoppingCart", shoppingCartRoute)
 }
 
 main();
