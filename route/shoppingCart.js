@@ -18,5 +18,19 @@ router.get("/:product_id/add", async (req,res)=>{
     res.redirect("back")
 })
 
+router.get("/:product_id/remove", async(req,res)=>{
+    let cartServices = new CartServices(req.session.user.id)
+
+    await cartServices.removeItem(req.params.product_id)
+    req.flash("success_messages", "The item has been removed")
+    res.redirect("back")
+})
+
+router.post("/:product_id/quantity/update", async(req,res)=>{
+    let cartServices = new CartServices(req.session.user.id)
+    await cartServices.updateQuantity(req.params.product_id, req.body.quantity);
+    req.flash("success_messages", "The quantity has been updated")
+    res.redirect("back")
+})
 
 module.exports = router

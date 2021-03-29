@@ -19,6 +19,26 @@ const getCartItemByUserAndProduct = async (userId, productId) => {
     return cartItem
 }
 
+const removeItem = async (userId, productId) => {
+    const item = await getCartItemByUserAndProduct(userId, productId);
+    if (item) {
+        item.destroy();
+        return true;
+    }
+    return false;
+}
+
+const updateQuantity = async(userId, productId, newQuantity) => {
+    const item = await getCartItemByUserAndProduct(userId, productId);
+    if (item) {
+        item.set("quantity", newQuantity);
+        item.save();
+        return item;
+    } else {
+        return null;
+    }
+}
+
 module.exports = {
-    getCartItemByUserAndProduct,getAllItems
+    getCartItemByUserAndProduct,getAllItems,removeItem,updateQuantity
 }
