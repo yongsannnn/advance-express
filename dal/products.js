@@ -1,5 +1,9 @@
 const { Category, Tag, Product } = require("../models")
 
+const getAllProducts = async() => {
+    return await Product.fetchAll()
+}
+
 const getAllCategories = async () => {
     const allCategories = await Category.fetchAll().map((category) => {
         return [category.get("id"), category.get("name")]
@@ -23,5 +27,5 @@ const getProductById = async (productId) => {
 }
 
 module.exports = {
-    getAllCategories, getAllTags, getProductById
+    getAllCategories, getAllTags, getProductById, getAllProducts
 }

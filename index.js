@@ -42,7 +42,7 @@ app.use(flash())
 const csurfInstance = csurf();
 app.use(function (req, res, next) {
     console.log(req.url)
-    if (req.url === "/checkout/process_payment") {
+    if (req.url === "/checkout/process_payment" || req.url.slice(0, 5) == "/api/") {
         return next();
     }
     csurfInstance(req, res, next);
@@ -93,6 +93,11 @@ const cloudinaryRoute = require("./route/cloudinary")
 const shoppingCartRoute = require("./route/shoppingCart")
 const checkoutRoute = require("./route/checkout")
 
+// API Routes
+const api = {
+    "products": require("./route/api/products")
+}
+
 async function main() {
     // Prefix
     // If the url begins with the forward slash, use the landingRoutes
@@ -103,6 +108,7 @@ async function main() {
     app.use("/cloudinary", cloudinaryRoute)
     app.use("/shoppingCart", shoppingCartRoute)
     app.use("/checkout", checkoutRoute)
+    app.use("/api/products", express.json(), api.products)
 }
 
 main();
