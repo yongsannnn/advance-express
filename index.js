@@ -95,7 +95,8 @@ const checkoutRoute = require("./route/checkout")
 
 // API Routes
 const api = {
-    "products": require("./route/api/products")
+    "products": require("./route/api/products"),
+    "users": require("./route/api/users")
 }
 
 async function main() {
@@ -109,6 +110,7 @@ async function main() {
     app.use("/shoppingCart", shoppingCartRoute)
     app.use("/checkout", checkoutRoute)
     app.use("/api/products", express.json(), api.products)
+    app.use("/api/users", express.json(), api.users)
 }
 
 main();
