@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
             let errors = {};
             for (let key in form.fields) {
                 if (form.fields[key].error) {
-                    errors[key] = form.field[key].error
+                    errors[key] = form.fields[key].error
                 }
             }
             res.send(JSON.stringify(errors))
