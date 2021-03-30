@@ -22,9 +22,9 @@ wax.setLayoutPath("./views/layouts");
 
 // enable forms
 app.use(
-  express.urlencoded({
-    extended: false
-  })
+    express.urlencoded({
+        extended: false
+    })
 );
 
 //setup sessions
@@ -39,10 +39,18 @@ app.use(session({
 app.use(flash())
 
 // Setup CSURF (It require session, thus line must be below setup sessions)
-app.use(csurf())
-app.use(function(err,req,res,next){
+const csurfInstance = csurf();
+app.use(function (req, res, next) {
+    console.log(req.url)
+    if (req.url === "/checkout/process_payment") {
+        return next();
+    }
+    csurfInstance(req, res, next);
+})
+
+app.use(function (err, req, res, next) {
     console.log(err)
-    if (err && err.code == "EBADCSRFTOKEN"){
+    if (err && err.code == "EBADCSRFTOKEN") {
         req.flash("error_messages", "Form has expired.")
         res.redirect("back");
     } else {
@@ -56,7 +64,7 @@ app.use(function(err,req,res,next){
 // a middleware
 // something that sit between the route and the user
 // Flash middleware
-app.use(function(req,res,next){
+app.use(function (req, res, next) {
     // Inject into the hbs file the success and error message
     res.locals.success_messages = req.flash("success_messages")
     res.locals.error_messages = req.flash("error_messages")
@@ -64,13 +72,15 @@ app.use(function(req,res,next){
 })
 
 //Global middleware to inject the req.session.use object into the local variable, which are accessible by hbs_files
-app.use(function(req,res,next){
+app.use(function (req, res, next) {
     res.locals.user = req.session.user;
     next()
 })
 
-app.use(function(req,res,next){
-    res.locals.csrfToken = req.csrfToken();
+app.use(function (req, res, next) {
+    if (req.csrfToken) {
+        res.locals.csrfToken = req.csrfToken();
+    }
     next()
 })
 
@@ -86,8 +96,8 @@ const checkoutRoute = require("./route/checkout")
 async function main() {
     // Prefix
     // If the url begins with the forward slash, use the landingRoutes
-  app.use("/", landingRoutes)
-  app.use("/corporate", corporateRoutes)
+    app.use("/", landingRoutes)
+    app.use("/corporate", corporateRoutes)
     app.use("/products", productRoutes)
     app.use("/users", userRoutes)
     app.use("/cloudinary", cloudinaryRoute)
@@ -98,5 +108,5 @@ async function main() {
 main();
 
 app.listen(3000, () => {
-  console.log("Server has started");
+    console.log("Server has started");
 });
