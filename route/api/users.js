@@ -55,6 +55,19 @@ router.post("/refresh", async (req, res) => {
     if (!refreshToken) {
         res.sendStatus(401);
     }
+
+    let blacklistedToken = await BlacklistedToken.where({
+        "token": refreshToken
+    }).fetch({
+        require: false
+    })
+
+    if (blacklistedToken) {
+        res.status(401)
+        res.send("Refresh token expired.")
+        return
+    }
+
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) {
             res.sendStatus(403)
@@ -78,12 +91,12 @@ router.post("/logout", async (req, res) => {
         res.sendStatus(403);
     } else {
         let blacklistedToken = await BlacklistedToken.where({
-            "token":refreshToken
+            "token": refreshToken
         }).fetch({
-            require:false
+            require: false
         })
 
-        if (blacklistedToken){
+        if (blacklistedToken) {
             res.status(401)
             res.send("Token Expired")
             return
