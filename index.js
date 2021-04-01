@@ -6,6 +6,7 @@ const session = require("express-session")
 const FileStore = require('session-file-store')(session);
 const flash = require("connect-flash")
 const csurf = require("csurf")
+const cors = require("cors")
 
 // create an instance of express app
 let app = express();
@@ -13,6 +14,7 @@ let app = express();
 // set the view engine
 app.set("view engine", "hbs");
 
+app.use(cors())
 // static folder
 app.use(express.static("public"));
 
